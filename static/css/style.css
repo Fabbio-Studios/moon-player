@@ -201,3 +201,23 @@ body {
                 width: 30px;
             }
         }
+        .eight-months-btn {
+            display: inline-block;
+            margin-left: 18px;
+            background: #fff;
+            color: #a259ff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 7px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px #a259ff22;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            vertical-align: middle;
+        }
+        .eight-months-btn:hover {
+            background: #a259ff;
+            color: #fff;
+            transform: scale(1.05);
+        }

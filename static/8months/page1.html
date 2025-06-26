@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>8 Meses de Amor 💜</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="page1.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-anim">
+        <img src="/assets/img/bg.png" alt="Sol e Lua refletindo no mar" class="bg-img">
+        <div class="stars"></div>
+        <div class="hearts"></div>
+    </div>
+    <main>
+        <div class="card-outer">
+            <div class="card" id="card">
+                <div class="card-front">
+                    <img src="/assets/img/cgv.webp" alt="Capa do cartão" class="card-cover">
+                    <h1 class="card-title">8 meses do nosso "nós" 💖</h1>
+                    <button class="open-btn" id="openBtn">Abrir Cartão</button>
+                </div>
+                <div class="card-inner">
+                    <div class="card-content">
+                        <h2>For you, for us.</h2>
+                        <p id="loveText">
+                            <!-- Seu texto especial pode ser colocado aqui ou via JS -->
+                            Olá, meu amor!<br>
+                            O tempo passa tão rápido… Quando a gente pisca… Boom! Oito meses da gente!<br>
+                            O que posso dizer sobre nós? Mesmo que eu tivesse todo o tempo do mundo, ainda não seria suficiente para descrever o nosso nós com palavras.<br><br>
+                            Descrever? Eu até gosto.<br>
+                            Mas o melhor de tudo isso é poder viver, sentir e agradecer por tudo.<br>
+                            Você sabe: a minha — ou melhor, a nossa vida — melhorou absurdamente desde que nos conhecemos, nos apaixonamos e cultivamos esse amor de forma recíproca.<br><br>
+                            Quem diria que tudo isso estava a um passo de acontecer?<br>
+                            Que nossas vidas, mesmo tão próximas, ainda não tinham se entrelaçado?<br>
+                            Mas as coisas só acontecem no tempo de Deus — e o tempo d’Ele é perfeito.<br><br>
+                            Sabe, amar alguém não é sobre estar junto 24h por dia, nem sobre se encher de presentes materiais.<br>
+                            Amar é abdicar do ego, é fazer muitas vezes o que nunca se fez, o que dá medo ou o que não se faria para mais ninguém, só para ver o outro bem.<br><br>
+                            Amar outra vida é construir e cultivar um laço que vai além de uma mera convenção.<br>
+                            Amor, somos tão jovens… Cometemos erros, temos tanto ainda a aprender — um sobre o outro e sobre nós mesmos.<br>
+                            Você, para mim, é como o céu para os pássaros: um espaço onde a alma encontra liberdade, direção e sentido.<br><br>
+                            E se tem algo que eu realmente quero nesta vida, o maior dos meus sonhos, o projeto mais sagrado que carrego no peito, é seguir o propósito de Deus ao teu lado.<br>
+                            Porque eu sei que, tendo você comigo — e Deus conosco — o resto se alinha.<br><br>
+                            A verdadeira grandeza não está nos carros, prédios, empresas ou no dinheiro que um dia terei.<br>
+                            Ela está em ter você.<br>
+                            Em termos nossa família servindo ao Criador.<br>
+                            Não sei o que o futuro nos reserva. Só sei que quero estar contigo para enfrentá-lo… e, enfim, alcançarmos a nossa salvação.<br><br>
+                            Bom, acho que acabei me empolgando um pouco (rsrs).<br>
+                            Mas quando se trata de nós — Deus, eu e você — desde aquela primeira mensagem, na noite do dia 26… não há como não me empolgar.<br><br>
+                            Te amo com a mente, o corpo, o coração e a alma.<br><br>
+                            Com todo o meu amor,<br>
+                            – Sun
+                        </p>
+                        <button class="close-btn" id="closeBtn">Voltar ao MP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Animação de abrir e fechar cartão
+        const card = document.getElementById('card');
+        const openBtn = document.getElementById('openBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        openBtn.onclick = () => card.classList.add('open');
+        closeBtn.onclick = () => window.location.href = "../../index.html"; // Agora volta ao index
+
+        // Animação de corações subindo
+        function createHeart() {
+            const hearts = document.querySelector('.hearts');
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (2 + Math.random() * 2) + 's';
+            hearts.appendChild(heart);
+            setTimeout(() => heart.remove(), 4000);
+        }
+        setInterval(createHeart, 800);
+
+        // Animação de estrelas piscando
+        function createStars() {
+            const stars = document.querySelector('.stars');
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 60 + 'vh';
+                star.style.animationDelay = (Math.random() * 3) + 's';
+                stars.appendChild(star);
+            }
+        }
+        createStars();
+    </script>
+</body>
+</html>
