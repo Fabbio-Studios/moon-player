@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon to Sun Switch</title>
+    <!-- Fonte romântica do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(ellipse at bottom, #23234e 0%, #0d0d1a 100%);
+            color: #eaeaea;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #starfield, #meteors {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            position: relative;
+        }
+        #instruction {
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            font-weight: 400;
+            text-shadow: 0 2px 16px #23234e, 0 0 8px #fff4;
+            font-family: 'Great Vibes', cursive, Arial, sans-serif;
+        }
+        #maze {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            /* Remover borda, fundo e sombra para ficar invisível */
+            border: none;
+            background: none;
+            box-shadow: none;
+        }
+        .emoji {
+            position: absolute;
+            font-size: 60px;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            filter: none;
+            transition: filter 0.3s;
+        }
+        #moon {
+            left: 20px;
+            top: 70px;
+            transition: left 0.2s, top 0.2s;
+            z-index: 2; /* Lua na frente do sol */
+        }
+        #sun {
+            right: 20px;
+            top: 70px;
+            z-index: 1; /* Sol atrás da lua */
+        }
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(26,26,46,0.95);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            /* animação de fade-in */
+            animation: none;
+        }
+        #modal.show {
+            display: flex;
+            animation: modalFadeIn 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @keyframes modalFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        #modal-content {
+            background-color: #eaeaea;
+            color: #23234e;
+            padding: 24px 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 24px #23234e55;
+        }
+        #close-btn {
+            margin-top: 18px;
+            padding: 12px 28px;
+            background-color: #23234e;
+            color: #eaeaea;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px #23234e44;
+        }
+        #restart-btn {
+            margin-top: 10px;
+            padding: 12px 28px;
+            background-color: #fff;
+            color: #23234e;
+            border: 1px solid #23234e;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: none; /* Escondido por padrão */
+            box-shadow: 0 2px 8px #23234e44;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+    <canvas id="meteors"></canvas>
+    <!-- Orion PNG abaixo do quadro do jogo -->
+    <img id="orion-img" src="orion.png" alt="Constelação de Órion"
+        style="
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 7vh;
+            width: 22vw;
+            min-width: 180px;
+            max-width: 320px;
+            opacity: 0.32;
+            pointer-events: none;
+            z-index: 1;
+        ">
+    <div id="container">
+        <div id="instruction">Faça o eclipse acontecer!</div>
+        <div id="maze">
+            <div id="moon" class="emoji">🌕</div>
+            <div id="sun" class="emoji">☀️</div>
+        </div>
+    </div>
+    <div id="modal">
+        <div id="modal-content">
+            <h2>For US:</h2>
+            <p>9 meses do nosso nós. Dois astros, um sentimento, uma escolha, um propósito.<br>Te amo, minha lua! 💜</p>
+            <button id="close-btn">Voltar ao início</button>
+        </div>
+    </div>
+    <script>
+        // Estrelas animadas
+        const starCanvas = document.getElementById('starfield');
+        const ctx = starCanvas.getContext('2d');
+        let stars = [];
+        function resizeStarfield() {
+            starCanvas.width = window.innerWidth;
+            starCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeStarfield);
+        resizeStarfield();
+
+        // Menos estrelas para não saturar
+        function createStars() {
+            stars = [];
+            for (let i = 0; i < 40; i++) {
+                stars.push({
+                    x: Math.random() * starCanvas.width,
+                    y: Math.random() * starCanvas.height,
+                    r: Math.random() * 1.2 + 0.5,
+                    a: Math.random() * 2 * Math.PI,
+                    speed: Math.random() * 0.02 + 0.01
+                });
+            }
+        }
+        createStars();
+
+        function animateStars() {
+            ctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+            for (let star of stars) {
+                star.a += star.speed;
+                let twinkle = Math.abs(Math.sin(star.a)) * 0.7 + 0.3;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.r * twinkle, 0, 2 * Math.PI);
+                ctx.fillStyle = "#fff";
+                ctx.globalAlpha = twinkle;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // Meteoros animados
+        const meteorCanvas = document.getElementById('meteors');
+        const mtx = meteorCanvas.getContext('2d');
+        function resizeMeteors() {
+            meteorCanvas.width = window.innerWidth;
+            meteorCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeMeteors);
+        resizeMeteors();
+        let meteors = [];
+        function spawnMeteor() {
+            meteors.push({
+                x: Math.random() * meteorCanvas.width,
+                y: -20,
+                len: Math.random() * 80 + 40,
+                speed: Math.random() * 6 + 4,
+                angle: Math.PI / 4 + Math.random() * 0.2 - 0.1,
+                alpha: 1
+            });
+        }
+        setInterval(spawnMeteor, 1800);
+        function animateMeteors() {
+            mtx.clearRect(0, 0, meteorCanvas.width, meteorCanvas.height);
+            for (let meteor of meteors) {
+                meteor.x += Math.cos(meteor.angle) * meteor.speed;
+                meteor.y += Math.sin(meteor.angle) * meteor.speed;
+                meteor.alpha -= 0.012;
+                mtx.save();
+                mtx.globalAlpha = Math.max(0, meteor.alpha);
+                mtx.strokeStyle = "rgba(255,255,200,0.8)";
+                mtx.lineWidth = 2;
+                mtx.beginPath();
+                mtx.moveTo(meteor.x, meteor.y);
+                mtx.lineTo(meteor.x - Math.cos(meteor.angle) * meteor.len, meteor.y - Math.sin(meteor.angle) * meteor.len);
+                mtx.stroke();
+                mtx.restore();
+            }
+            meteors = meteors.filter(m => m.alpha > 0);
+            requestAnimationFrame(animateMeteors);
+        }
+        animateMeteors();
+
+        // Jogo eclipse
+        const moon = document.getElementById('moon');
+        const sun = document.getElementById('sun');
+        const modal = document.getElementById('modal');
+        const closeBtn = document.getElementById('close-btn');
+
+        let dragging = false, offsetX = 0, offsetY = 0;
+
+        // Mouse
+        moon.addEventListener('mousedown', (e) => {
+            dragging = true;
+            offsetX = e.clientX - moon.getBoundingClientRect().left;
+            offsetY = e.clientY - moon.getBoundingClientRect().top;
+            moon.style.cursor = 'grabbing';
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            moveMoon(e.clientX, e.clientY);
+        });
+        document.addEventListener('mouseup', () => {
+            if (dragging) {
+                dragging = false;
+                moon.style.cursor = 'grab';
+                checkWin();
+            }
+        });
+
+        // Touch
+        moon.addEventListener('touchstart', (e) => {
+            dragging = true;
+            const touch = e.touches[0];
+            offsetX = touch.clientX - moon.getBoundingClientRect().left;
+            offsetY = touch.clientY - moon.getBoundingClientRect().top;
+        });
+        document.addEventListener('touchmove', (e) => {
+            if (!dragging) return;
+            const touch = e.touches[0];
+            moveMoon(touch.clientX, touch.clientY);
+        }, {passive:false});
+        document.addEventListener('touchend', () => {
+            if (dragging) {
+                dragging = false;
+                checkWin();
+            }
+        });
+
+        function moveMoon(x, y) {
+            const mazeRect = document.getElementById('maze').getBoundingClientRect();
+            let left = x - mazeRect.left - offsetX;
+            let top = y - mazeRect.top - offsetY;
+            // Limit moon inside maze
+            left = Math.max(0, Math.min(left, mazeRect.width - moon.offsetWidth));
+            top = Math.max(0, Math.min(top, mazeRect.height - moon.offsetHeight));
+            moon.style.left = left + 'px';
+            moon.style.top = top + 'px';
+        }
+
+        function checkWin() {
+            const moonRect = moon.getBoundingClientRect();
+            const sunRect = sun.getBoundingClientRect();
+
+            const moonCenterX = moonRect.left + moonRect.width / 2;
+            const moonCenterY = moonRect.top + moonRect.height / 2;
+            const sunCenterX = sunRect.left + sunRect.width / 2;
+            const sunCenterY = sunRect.top + sunRect.height / 2;
+            const dist = Math.hypot(moonCenterX - sunCenterX, moonCenterY - sunCenterY);
+
+            // Só ganha se a lua estiver sobre o sol (centros próximos)
+            if (dist < 50) {
+                modal.classList.add('show');
+            }
+        }
+
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            // Redireciona para index.html na raiz, compatível com GitHub Pages
+            window.location.href = './index.html';
+        });
+
+        // Mostre o modal usando apenas a classe .show
+        document.querySelector('#modal').addEventListener('animationend', function() {
+            if (modal.classList.contains('show')) {
+                modal.style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>
