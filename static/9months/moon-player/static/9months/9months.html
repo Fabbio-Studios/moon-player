@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon to Sun Switch</title>
+    <!-- Fonte romântica do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: #eaeaea;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #instruction {
+            font-size: 2rem;
+            color: #eaeaea;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            font-weight: 400;
+            text-shadow: 0 2px 8px #1a1a2e88;
+            font-family: 'Great Vibes', cursive, Arial, sans-serif;
+        }
+        #maze {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            border: 2px solid #eaeaea;
+            overflow: hidden;
+            background-color: #16213e;
+        }
+        .emoji {
+            position: absolute;
+            font-size: 60px;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        #moon {
+            left: 20px;
+            top: 70px;
+            transition: left 0.2s, top 0.2s;
+        }
+        #sun {
+            right: 20px;
+            top: 70px;
+        }
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(26,26,46,0.95);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        #modal-content {
+            background-color: #eaeaea;
+            color: #1a1a2e;
+            padding: 24px 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 24px #1a1a2e55;
+        }
+        #close-btn {
+            margin-top: 18px;
+            padding: 12px 28px;
+            background-color: #1a1a2e;
+            color: #eaeaea;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="instruction">Faça o eclipse acontecer!</div>
+        <div id="maze">
+            <div id="moon" class="emoji">🌕</div>
+            <div id="sun" class="emoji">☀️</div><!-- Sol sem olhos -->
+        </div>
+    </div>
+    <div id="modal">
+        <div id="modal-content">
+            <h2>Parabéns!</h2>
+            <p>9 meses de namoro, e cada dia mais iluminado por você.<br>Te amo! 💜</p>
+            <button id="close-btn">Voltar ao início</button>
+        </div>
+    </div>
+    <script>
+        const moon = document.getElementById('moon');
+        const sun = document.getElementById('sun');
+        const modal = document.getElementById('modal');
+        const closeBtn = document.getElementById('close-btn');
+
+        let dragging = false, offsetX = 0, offsetY = 0;
+
+        // Mouse
+        moon.addEventListener('mousedown', (e) => {
+            dragging = true;
+            offsetX = e.clientX - moon.getBoundingClientRect().left;
+            offsetY = e.clientY - moon.getBoundingClientRect().top;
+            moon.style.cursor = 'grabbing';
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            moveMoon(e.clientX, e.clientY);
+        });
+        document.addEventListener('mouseup', () => {
+            if (dragging) {
+                dragging = false;
+                moon.style.cursor = 'grab';
+                checkWin();
+            }
+        });
+
+        // Touch
+        moon.addEventListener('touchstart', (e) => {
+            dragging = true;
+            const touch = e.touches[0];
+            offsetX = touch.clientX - moon.getBoundingClientRect().left;
+            offsetY = touch.clientY - moon.getBoundingClientRect().top;
+        });
+        document.addEventListener('touchmove', (e) => {
+            if (!dragging) return;
+            const touch = e.touches[0];
+            moveMoon(touch.clientX, touch.clientY);
+        }, {passive:false});
+        document.addEventListener('touchend', () => {
+            if (dragging) {
+                dragging = false;
+                checkWin();
+            }
+        });
+
+        function moveMoon(x, y) {
+            const mazeRect = document.getElementById('maze').getBoundingClientRect();
+            let left = x - mazeRect.left - offsetX;
+            let top = y - mazeRect.top - offsetY;
+            // Limit moon inside maze
+            left = Math.max(0, Math.min(left, mazeRect.width - moon.offsetWidth));
+            top = Math.max(0, Math.min(top, mazeRect.height - moon.offsetHeight));
+            moon.style.left = left + 'px';
+            moon.style.top = top + 'px';
+        }
+
+        function checkWin() {
+            const moonRect = moon.getBoundingClientRect();
+            const sunRect = sun.getBoundingClientRect();
+            // Se encostar um pouco, já ganha
+            if (moonRect.right > sunRect.left - 10) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            window.location.href = '/index.html'; // Volta para o index.html da raiz
+        });
+    </script>
+</body>
+</html>
