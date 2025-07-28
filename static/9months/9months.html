@@ -320,6 +320,7 @@
 
             // Só ganha se a lua estiver sobre o sol (centros próximos)
             if (dist < 50) {
+                modal.style.display = 'flex';
                 modal.classList.add('show');
             }
         }
@@ -328,15 +329,8 @@
             e.stopPropagation();
             modal.classList.remove('show');
             modal.style.display = 'none';
-            // Redireciona para index.html na raiz, compatível com GitHub Pages
-            window.location.href = './index.html';
-        });
-
-        // Mostre o modal usando apenas a classe .show
-        document.querySelector('#modal').addEventListener('animationend', function() {
-            if (modal.classList.contains('show')) {
-                modal.style.display = 'flex';
-            }
+            // Redireciona para index.html na raiz, compatível com GitHub Pages e local
+            window.location.href = location.origin + location.pathname.replace(/\/static\/9months\/9months\.html$/, '/index.html');
         });
     </script>
 </body>
