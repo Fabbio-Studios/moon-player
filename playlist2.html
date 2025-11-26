@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Nossa segunda Playlist - Moon Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" type="image/webp" href="assets/img/icon.png">
+</head>
+<body>
+    <header>
+        <span style="vertical-align:middle;">&#127765; Moon Player</span>
+        <a href="index.html" class="eight-months-btn">Voltar</a>
+    </header>
+    <main>
+        <div class="player">
+            <img src="assets/img/default.png" alt="Capa" class="cover" id="cover">
+            <div class="song-title" id="title">Título</div>
+            <div class="song-artist" id="artist">Artista</div>
+            <div class="controls">
+                <button id="prev"><i class="fa fa-backward"></i></button>
+                <button id="play"><i class="fa fa-play"></i></button>
+                <button id="next"><i class="fa fa-forward"></i></button>
+            </div>
+            <div class="progress-container">
+                <span class="time" id="current-time">0:00</span>
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <span class="time" id="duration">0:00</span>
+            </div>
+            <audio id="audio"></audio>
+            <div class="playlist" id="playlist"></div>
+        </div>
+    </main>
+    <script>
+        // Playlist 2 com a música adicionada
+        const songs = [
+            { title: "Dusk Till Dawn💎", artist: "ZAYN feat. Sia", src: "assets/songs/2.1.mp3", cover: "assets/img/default.png" }
+        ];
+
+        let currentSong = 0;
+        const audio = document.getElementById('audio');
+        const cover = document.getElementById('cover');
+        const title = document.getElementById('title');
+        const artist = document.getElementById('artist');
+        const playBtn = document.getElementById('play');
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+        const progressBar = document.getElementById('progress-bar');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const playlistEl = document.getElementById('playlist');
+
+        function loadSong(index) {
+            const song = songs[index];
+            title.textContent = song.title;
+            artist.textContent = song.artist;
+            cover.src = song.cover;
+            audio.src = song.src;
+            updatePlaylist();
+        }
+
+        function playSong() {
+            audio.play().catch(() => {});
+            playBtn.innerHTML = '<i class="fa fa-pause"></i>';
+        }
+
+        function pauseSong() {
+            audio.pause();
+            playBtn.innerHTML = '<i class="fa fa-play"></i>';
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) playSong(); else pauseSong();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentSong = (currentSong - 1 + songs.length) % songs.length;
+            loadSong(currentSong);
+            playSong();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentSong = (currentSong + 1) % songs.length;
+            loadSong(currentSong);
+            playSong();
+        });
+
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('loadedmetadata', updateProgress);
+        audio.addEventListener('ended', () => nextBtn.click());
+
+        function updateProgress() {
+            const { duration, currentTime } = audio;
+            if (duration) {
+                const percent = (currentTime / duration) * 100;
+                progress.style.width = percent + '%';
+                currentTimeEl.textContent = formatTime(currentTime);
+                durationEl.textContent = formatTime(duration);
+            } else {
+                progress.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+                durationEl.textContent = '0:00';
+            }
+        }
+
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = percent * audio.duration;
+        });
+
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        function updatePlaylist() {
+            playlistEl.innerHTML = '';
+            songs.forEach((song, idx) => {
+                const item = document.createElement('div');
+                item.className = 'playlist-item' + (idx === currentSong ? ' active' : '');
+                item.innerHTML = `
+                    <img src="${song.cover}" class="playlist-cover" alt="">
+                    <div class="playlist-info">
+                        <div class="playlist-title">${song.title}</div>
+                        <div class="playlist-artist">${song.artist}</div>
+                    </div>
+                `;
+                item.addEventListener('click', () => {
+                    currentSong = idx;
+                    loadSong(currentSong);
+                    playSong();
+                });
+                playlistEl.appendChild(item);
+            });
+        }
+
+        // Inicialização
+        loadSong(currentSong);
+    </script>
+</body>
+</html>

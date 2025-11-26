@@ -12,214 +12,40 @@
 <body>
     <header>
         <span style="vertical-align:middle;">&#127765; Moon Player</span>
-        <!--<a href="static/10months.html" class="eight-months-btn">10 months</a>-->
     </header>
     <main>
         <div class="player">
-            <img src="" alt="Capa do álbum" class="cover" id="cover">
-            <div class="song-title" id="title">Título</div>
-            <div class="song-artist" id="artist">Artista</div>
-            <div class="controls">
-                <button id="prev"><i class="fa fa-backward"></i></button>
-                <button id="play"><i class="fa fa-play"></i></button>
-                <button id="next"><i class="fa fa-forward"></i></button>
+            <div style="text-align:center; width:100%; margin-bottom:14px;">
+                <div class="song-title" style="font-size:1.2rem;">Playlists</div>
+                <div class="song-artist" style="font-size:0.9rem; color:#ccc;">Escolha uma playlist para abrir o player</div>
             </div>
-            <div class="progress-container">
-                <span class="time" id="current-time">0:00</span>
-                <div class="progress-bar" id="progress-bar">
-                    <div class="progress" id="progress"></div>
-                </div>
-                <span class="time" id="duration">0:00</span>
+
+            <div class="playlist" id="playlists-list" style="width:100%;">
+                <a href="playlist1.html" class="playlist-card" style="display:flex;align-items:center;text-decoration:none;color:inherit;padding:10px;border-radius:8px;margin-bottom:8px;background:transparent;">
+                    <img src="assets/img/cbg.webp" style="width:56px;height:56px;border-radius:8px;object-fit:cover;margin-right:12px;" alt="Capa">
+                    <div style="flex:1;">
+                        <div class="playlist-title">Nossa Playlist 1.0 🤍</div>
+                        <div class="playlist-artist">12 músicas • Nossa seleção</div>
+                    </div>
+                    <div style="font-size:0.9rem;color:#b3b3b3;">Abrir</div>
+                </a>
+
+                <a href="playlist2.html" class="playlist-card" style="display:flex;align-items:center;text-decoration:none;color:inherit;padding:10px;border-radius:8px;margin-bottom:8px;background:transparent;">
+                    <img src="assets/img/default.png" style="width:56px;height:56px;border-radius:8px;object-fit:cover;margin-right:12px;" alt="Capa">
+                    <div style="flex:1;">
+                        <div class="playlist-title">Nossa Playlist 2.0 </div>
+                        <div class="playlist-artist"> 1 Múscia </div>
+                    </div>
+                    <div style="font-size:0.9rem;color:#b3b3b3;">Abrir</div>
+                </a>
             </div>
-            <audio id="audio"></audio>
-            <div class="playlist" id="playlist"></div>
         </div>
     </main>
     <script>
-        // Lista de músicas locais
-        const songs = [
-            {
-                title: "Nossa Música 💎",
-                artist: "Bruno & Lady",
-                src: "assets/songs/gvsong.mp3",
-                cover: "assets/img/cgv.webp"
-            },
-            {
-                title: "Our Feelings ❤️",
-                artist: "Não lembro rsrs",
-                src: "assets/songs/ringsong.mp3",
-                cover: "assets/img/cring.webp"
-            },
-            {
-                title: "Dedico a Você 🤍",
-                artist: "Luan (aquele lá, do meteoro)",
-                src: "assets/songs/ussong.mp3",
-                cover: "assets/img/cbg.webp"
-            },
-            {
-                title: "Dois corações 💞",
-                artist: "Melim",
-                src: "assets/songs/07.mp3",
-                cover: "assets/img/07.webp"
-            },
-            {
-                title: "Um amor puro 💖",
-                artist: "Djavan",
-                src: "assets/songs/08.mp3",
-                cover: "assets/img/08.webp"
-            },
-            {
-                title: "Amor sem medida 💘",
-                artist: "Matheus & Kauan",
-                src: "assets/songs/09.mp3",
-                cover: "assets/img/09.webp"
-            },
-            {
-                title: "Mirrors 🔮",
-                artist: "Justin Timberlake",
-                src: "assets/songs/10.mp3",
-                cover: "assets/img/default.png"
-            },
-            {
-                title: "Rewrite the stars 🌟",
-                artist: "Zac Efron, Zendaya",
-                src: "assets/songs/06.mp3",
-                cover: "assets/img/default.png"
-            },
-            {
-                title: "Baby I'm yours 💫",
-                artist: "arctic monkeys",
-                src: "assets/songs/11.mp3",
-                cover: "assets/img/default.png"
-            },
-            {
-                title: "Si no estás ✈ ",
-                artist: "iñigo quintero",
-                src: "assets/songs/11g.mp3",
-                cover: "assets/img/default.png"
-            },
-            {
-                title: "Velha infância 🌙",
-                artist: "1 Ano, dela pra mim",
-                src: "assets/songs/12.mp3",
-                cover: "assets/img/default.png"
-            },
-            {
-                title: "Além do tempo 🌌",
-                artist: "1 Ano, dele pra mim",
-                src: "assets/songs/12g.mp3",
-                cover: "assets/img/default.png"
-            },
-        ];
-
-        let currentSong = 0;
-        const audio = document.getElementById('audio');
-        const cover = document.getElementById('cover');
-        const title = document.getElementById('title');
-        const artist = document.getElementById('artist');
-        const playBtn = document.getElementById('play');
-        const prevBtn = document.getElementById('prev');
-        const nextBtn = document.getElementById('next');
-        const progressBar = document.getElementById('progress-bar');
-        const progress = document.getElementById('progress');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
-        const playlistEl = document.getElementById('playlist');
-
-        function loadSong(index) {
-            const song = songs[index];
-            title.textContent = song.title;
-            artist.textContent = song.artist;
-            cover.src = song.cover;
-            audio.src = song.src;
-            updatePlaylist();
-        }
-
-        function playSong() {
-            audio.play();
-            playBtn.innerHTML = '<i class="fa fa-pause"></i>';
-        }
-
-        function pauseSong() {
-            audio.pause();
-            playBtn.innerHTML = '<i class="fa fa-play"></i>';
-        }
-
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                playSong();
-            } else {
-                pauseSong();
-            }
+        // Script simples para comportamentos na página de playlists (index)
+        document.querySelectorAll('.playlist-card').forEach(el => {
+            // nada extra necessário: links já navegam para as páginas de playlist
         });
-
-        prevBtn.addEventListener('click', () => {
-            currentSong = (currentSong - 1 + songs.length) % songs.length;
-            loadSong(currentSong);
-            playSong();
-        });
-
-        nextBtn.addEventListener('click', () => {
-            currentSong = (currentSong + 1) % songs.length;
-            loadSong(currentSong);
-            playSong();
-        });
-
-        audio.addEventListener('timeupdate', updateProgress);
-        audio.addEventListener('loadedmetadata', updateProgress);
-        audio.addEventListener('ended', () => {
-            nextBtn.click();
-        });
-
-        function updateProgress() {
-            const { duration, currentTime } = audio;
-            if (duration) {
-                const percent = (currentTime / duration) * 100;
-                progress.style.width = percent + '%';
-                currentTimeEl.textContent = formatTime(currentTime);
-                durationEl.textContent = formatTime(duration);
-            } else {
-                progress.style.width = '0%';
-                currentTimeEl.textContent = '0:00';
-                durationEl.textContent = '0:00';
-            }
-        }
-
-        progressBar.addEventListener('click', (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            audio.currentTime = percent * audio.duration;
-        });
-
-        function formatTime(sec) {
-            const m = Math.floor(sec / 60);
-            const s = Math.floor(sec % 60);
-            return `${m}:${s < 10 ? '0' : ''}${s}`;
-        }
-
-        function updatePlaylist() {
-            playlistEl.innerHTML = '';
-            songs.forEach((song, idx) => {
-                const item = document.createElement('div');
-                item.className = 'playlist-item' + (idx === currentSong ? ' active' : '');
-                item.innerHTML = `
-                    <img src="${song.cover}" class="playlist-cover" alt="">
-                    <div class="playlist-info">
-                        <div class="playlist-title">${song.title}</div>
-                        <div class="playlist-artist">${song.artist}</div>
-                    </div>
-                `;
-                item.addEventListener('click', () => {
-                    currentSong = idx;
-                    loadSong(currentSong);
-                    playSong();
-                });
-                playlistEl.appendChild(item);
-            });
-        }
-
-        // Inicialização
-        loadSong(currentSong);
     </script>
 </body>
 </html>
