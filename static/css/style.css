@@ -13,13 +13,13 @@ body {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             z-index: -1;
-            background-image: linear-gradient(180deg, #181818 0%, #121212 100%), url('../assets/img/cbg.webp');
+            background-image: linear-gradient(180deg, rgba(24, 24, 24, 0.72) 0%, rgba(18, 18, 18, 0.8) 100%), url('../../assets/img/wallpaper.jpg');
             background-blend-mode: multiply;
             background-repeat: no-repeat;
             background-position: center center;
             background-attachment: fixed;
             background-size: cover;
-            opacity: 0.85;
+            opacity: 1;
             pointer-events: none;
         }
         header {
